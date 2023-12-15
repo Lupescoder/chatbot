@@ -1,0 +1,6 @@
+2023/12/15-14:37:46.213 37f4 Reusing MANIFEST C:\Users\GRUPO CEVICOM\Documents\chatbotwpp\tokens\sessionName\Default\Local Storage\leveldb/MANIFEST-000001
+2023/12/15-14:37:46.217 37f4 Recovering log #26
+2023/12/15-14:37:46.220 37f4 Reusing old log C:\Users\GRUPO CEVICOM\Documents\chatbotwpp\tokens\sessionName\Default\Local Storage\leveldb/000026.log 
+2023/12/15-14:39:47.460 3004 Level-0 table #30: started
+2023/12/15-14:39:47.521 3004 Level-0 table #30: 32233 bytes OK
+2023/12/15-14:39:47.549 3004 Delete type=0 #26
