@@ -1,0 +1,2729 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "489deb8e-cfe7-41e4-ad17-40ac30b9a7cd",
+        "options": {}
+      },
+      "id": "f7f3b5b4-6190-4ffd-b13d-5ffe3d25ba9e",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -2140,
+        1080
+      ],
+      "webhookId": "489deb8e-cfe7-41e4-ad17-40ac30b9a7cd"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $('Webhook').item.json.body.isGroupMsg }}"
+            }
+          ]
+        }
+      },
+      "id": "fbb4c29d-09f5-491d-a791-f2ab4186f7e4",
+      "name": "Mensagem de Contato",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -1640,
+        1080
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Mensagem de Contato').item.json.body.content }}",
+              "operation": "regex",
+              "value2": "/Bom Dia/gi"
+            },
+            {
+              "value1": "={{ $('Mensagem de Contato').item.json.body.content }}",
+              "operation": "regex",
+              "value2": "/\\bOl[aá]\\b/gi"
+            },
+            {
+              "value1": "={{ $('Mensagem de Contato').item.json.body.content }}",
+              "operation": "regex",
+              "value2": "/Boa Tarde/gi"
+            },
+            {
+              "value1": "={{ $('Mensagem de Contato').item.json.body.content }}",
+              "operation": "regex",
+              "value2": "/Boa Noite/gi"
+            },
+            {
+              "value1": "={{ $('Mensagem de Contato').item.json.body.content }}",
+              "operation": "regex",
+              "value2": "/\\bOi\\b/gi"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "c2113fea-c3a8-4d3d-91ca-bb735e19c0b6",
+      "name": "Verifica Palavra Chave",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -1000,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Olá, seja bem vindo ao *Instituto Campolina* {{ $('Webhook').item.json.body.sender.pushname }}!\n\nComo posso te ajudar? Selecione uma das opções abaixo: \n\n*1.* Cirurgia Ortognática \n\n*2.* Siso Incluso \n\n*3.* DTM \n\n*4.* Implantes Dentários \n\n*5.* Consulta \n\n*6.* Falar com atendente"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "624b79cc-5a38-4de7-9f3c-ff8b990206dd",
+      "name": "Apresentação Inicial",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -600,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo! Você selecionou *Cirurgia Ortognática*, você tem convênio {{ $('Webhook').item.json.body.sender.pushname }}?\n\n*1.* Sim\n*2.* Particular"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "654b1641-c1f1-460c-95ff-03109d213d74",
+      "name": "Apresenta Sub Menu 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fields": {
+          "values": [
+            {
+              "name": "envioMensagemUrl",
+              "stringValue": "http://localhost:8080/send-message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3374bb01-9ff1-4f2b-8f96-5f3b9eca6b6c",
+      "name": "Parametros Iniciais",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        -1920,
+        1080
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Principal"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d536b04d-d5fb-470d-b4cd-ce9ecddb9648",
+      "name": "Status Inicial",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        860
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "limit": 1,
+        "where": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Mensagem de Contato').item.json.body.from }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "681ddd63-2355-4e88-bd8e-0f8af80d1329",
+      "name": "Buscar Ultima Mensagem",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        -1320,
+        960
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Buscar Ultima Mensagem').item.json.state }}",
+              "value2": "Principal"
+            }
+          ]
+        }
+      },
+      "id": "e6a545eb-d05d-4148-b96d-c7c5fc520e92",
+      "name": "Verificar Status Principal",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Webhook').item.json.body.content }}",
+              "value2": "1"
+            }
+          ]
+        }
+      },
+      "id": "3330b127-5063-4106-8532-2bc0a622a501",
+      "name": "Verificar Convenios ou Particular",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        3780
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Qual seu convênio?\n*1.* Bradesco\n*2.* Unimed\n*3.* Amil\n*4.* Geap\n*5.* Outros"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aebaef97-9758-440f-aec8-1d58013f9bf2",
+      "name": "Apresenta Convenios",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        380,
+        3680
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=SelecionarConvenios"
+            },
+            {
+              "column": "selecionado",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6d81d705-a1e6-4408-a940-5de2748dbcb5",
+      "name": "Status Convenio",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        3680
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Menu1"
+            },
+            {
+              "column": "selecionado",
+              "value": "Menu1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "23c59d94-9a44-4628-82ec-a8aa41a7df80",
+      "name": "Status Menu 1",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1160,
+        300
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo! Você selecionou *Siso Incluso*, você tem convênio {{ $('Webhook').item.json.body.sender.pushname }}?\n\n*1.* Sim\n*2.* Particular"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d240d582-5911-4543-bafb-f23a6d771862",
+      "name": "Apresenta Sub Menu 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Menu2"
+            },
+            {
+              "column": "selecionado",
+              "value": "Menu2"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "502a9d0c-a1fc-4dfe-b4dc-387b96b6503b",
+      "name": "Status Menu 2",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1160,
+        500
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo! Você selecionou *DTM*, você tem convênio {{ $('Webhook').item.json.body.sender.pushname }}?\n\n*1.* Sim\n*2.* Particular"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e8e00c95-87fc-43d7-a1a6-c0362f57e297",
+      "name": "Apresenta Sub Menu 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Menu3"
+            },
+            {
+              "column": "selecionado",
+              "value": "Menu3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f27383b0-eff7-4ce5-99cc-fd1eaee518c5",
+      "name": "Status Menu 3",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1160,
+        680
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo! Você selecionou *Implantes Dentários*.\nAguarde alguns minutos que logo retornaremos o contato, obrigado pela preferência!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8d2f8abd-dce0-49d8-94c5-7991525d0bf7",
+      "name": "Apresenta Sub Menu 4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        860
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo! Você selecionou *Consulta*.\nAguarde alguns minutos que logo retornaremos o contato, obrigado pela preferência!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "464ae477-b272-4793-90e7-4b325764fa75",
+      "name": "Apresenta Sub Menu 5",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        1040
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Atendimento"
+            },
+            {
+              "column": "selecionado",
+              "value": "Menu5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "430b751e-a061-4a97-929a-dc28b0b8bf28",
+      "name": "Status Menu 5",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1160,
+        1040
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Atendimento"
+            },
+            {
+              "column": "selecionado",
+              "value": "Menu4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a82db762-657a-4549-b486-6564b8303c6a",
+      "name": "Status Menu 4",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1160,
+        860
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Atendimento"
+            },
+            {
+              "column": "selecionado",
+              "value": "Menu6"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "35c13aff-5bb4-4cf6-8560-3d201ec1d5d9",
+      "name": "Status Menu ",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1160,
+        1220
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo! Você selecionou *Falar com Atendente*, {{ $json.body.sender.name }}.\n\nAguarde alguns minutos que logo retornaremos o contato, obrigado pela preferência!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "44d52aa3-9c20-4b6f-bc0c-3939fb2ba2b0",
+      "name": "Apresenta Sub Menu 6",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        900,
+        1220
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $('Mensagem de Contato').item.json.body.content }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "1",
+              "outputKey": "1"
+            },
+            {
+              "value2": "2",
+              "outputKey": "2"
+            },
+            {
+              "value2": "3",
+              "outputKey": "3"
+            },
+            {
+              "value2": "4",
+              "outputKey": "4"
+            },
+            {
+              "value2": "5",
+              "outputKey": "5"
+            },
+            {
+              "value2": "6",
+              "outputKey": "6"
+            }
+          ]
+        }
+      },
+      "id": "90f4977c-fb24-41af-9d69-47f062d7f9ea",
+      "name": "Verifica Opções do Menu Principal",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        420,
+        920
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "convenio",
+              "value": "=Particular"
+            },
+            {
+              "column": "state",
+              "value": "Atendimento"
+            },
+            {
+              "column": "selecionado",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "46948b8e-ec61-4426-b799-3302d2f02715",
+      "name": "Status Convenio1",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        3920
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo, logo entraremos em contato!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8699ed31-cdaf-4d76-833d-a166204b31e7",
+      "name": "Particular",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        380,
+        3920
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Buscar Ultima Mensagem').item.json.state }}",
+              "value2": "SelecionarConvenios"
+            }
+          ]
+        }
+      },
+      "id": "b9de4b4a-1ba8-4918-aa5a-c886737eba5d",
+      "name": "Selecionar Convenios",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        1460
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Convenio"
+            },
+            {
+              "column": "selecionado",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}"
+            },
+            {
+              "column": "convenio",
+              "value": "Bradesco"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5e7cf83b-b57c-46c7-be09-b3dc4b7f550d",
+      "name": "Salvar Convenio 1",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        1560
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Convenio"
+            },
+            {
+              "column": "selecionado",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}"
+            },
+            {
+              "column": "convenio",
+              "value": "Unimed"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5945574c-470d-4036-b480-21d389925bff",
+      "name": "Salvar Convenio 2",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1120,
+        1780
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Convenio"
+            },
+            {
+              "column": "selecionado",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}"
+            },
+            {
+              "column": "convenio",
+              "value": "Amil"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7ef0fed8-3171-4b46-976a-f15da95e162d",
+      "name": "Salvar Convenio  3",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        1980
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Convenio"
+            },
+            {
+              "column": "selecionado",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}"
+            },
+            {
+              "column": "convenio",
+              "value": "Geap"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3ca92578-13ff-403c-ac8e-92670e246385",
+      "name": "Salvar Convenio  4",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        2160
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Convenio"
+            },
+            {
+              "column": "selecionado",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}"
+            },
+            {
+              "column": "convenio",
+              "value": "Outros"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6ec4c6ee-8fdb-452d-88f6-fcb9ba20de06",
+      "name": "Salvar Convenio  5",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        2340
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $('Webhook').item.json.body.content }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "1",
+              "outputKey": "1"
+            },
+            {
+              "value2": "2",
+              "outputKey": "2"
+            },
+            {
+              "value2": "3",
+              "outputKey": "3"
+            },
+            {
+              "value2": "4",
+              "outputKey": "4"
+            },
+            {
+              "value2": "5",
+              "outputKey": "5"
+            }
+          ]
+        }
+      },
+      "id": "70810181-1ca1-4002-8238-7c2978ebe385",
+      "name": "Escolha dos Convenios",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        580,
+        1900
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo, logo entraremos em contato!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "de2a5208-6ce9-4513-a05b-22b090a22490",
+      "name": "Entraremos em Contato",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1400,
+        2340
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Ótimo, seu convênio é o {{ $('Buscar Ultima Mensagem1').item.json.convenio }} e atendemos este convênio! \n\nDeseja marcar uma consulta?\n\n*1.* sim\n*2.* outro assunto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6a1af63b-bb03-4d84-981c-0996ffbb1bc7",
+      "name": "Atendemos Convenio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2340,
+        1820
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "limit": 1,
+        "where": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Mensagem de Contato').item.json.body.from }}"
+            }
+          ]
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e670727f-8dd7-496a-ab59-f6c965fd44d1",
+      "name": "Buscar Ultima Mensagem1",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        1720,
+        1820
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Ótimo, seu convênio é o {{ $('Buscar Ultima Mensagem1').item.json.convenio }} e atendemos este convênio!\n\nVocê já tem o Raio X Panorâmico?\n\n*1.* sim\n*2.* outro assunto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3623520-79b6-4a58-b0e9-02f47d00de18",
+      "name": "Se Siso Incluso",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2340,
+        2020
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Buscar Ultima Mensagem').item.json.state }}",
+              "value2": "Convenio"
+            }
+          ]
+        }
+      },
+      "id": "76806f57-1ba7-47e5-a4fc-f836ba68b0f4",
+      "name": "Continuação dos Menus",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        2020
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $('Buscar Ultima Mensagem1').item.json.selecionado }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "Menu1",
+              "outputKey": "1"
+            },
+            {
+              "value2": "Menu2",
+              "outputKey": "2"
+            },
+            {
+              "value2": "Menu3",
+              "outputKey": "3"
+            }
+          ]
+        }
+      },
+      "id": "a5a595ab-94c4-49a8-9a22-0541fda50308",
+      "name": "Status Escolhido",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        1820
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo, logo entraremos em contato!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "88b0ca87-7c04-4220-be47-e284c60db570",
+      "name": "Entraremos em Contato1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3160,
+        2960
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Atendimento"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0c405751-0283-4dfb-9ccf-3d292ee41f8d",
+      "name": "Finalizar Status",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        2800,
+        2960
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "Menu1",
+              "outputKey": "1"
+            },
+            {
+              "value2": "Menu2",
+              "outputKey": "2"
+            },
+            {
+              "value2": "Menu3",
+              "outputKey": "3"
+            }
+          ]
+        }
+      },
+      "id": "3ae6d59d-2d4e-4938-91b2-1e7d704ab9e5",
+      "name": "Parte 2 Dos Menus",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        2420,
+        2980
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $('Webhook').item.json.body.content }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "1",
+              "outputKey": "1"
+            },
+            {
+              "value2": "2",
+              "outputKey": "2"
+            }
+          ]
+        }
+      },
+      "id": "4b61fa80-0dcd-4e9c-b15a-39f49b9d1fd4",
+      "name": "RaioX",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        3300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Me envie uma foto ou arquivo por gentileza? "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e709c110-88ab-4a3a-aae7-7cd0bcfbab73",
+      "name": "Me Envie Foto ou Arquivo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3160,
+        3220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Para atendimento de Siso, precisamos solicitar o Raio X Panorâmico, tem interesse\nem continuar o atendimento? \n\n*1.* Sim\n*2.* Não\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ce4bd245-b1f8-4f11-b930-c037c83e7724",
+      "name": "Precisamos Solicitar Raio X",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        3160,
+        3460
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Menu2Part2"
+            },
+            {
+              "column": "selecionado",
+              "value": "Menu2Part2Nao"
+            },
+            {
+              "column": "convenio",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.convenio }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "12d955c8-b3e1-48d2-a2b5-2dc654f3a9a4",
+      "name": "Continua Siso",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        3460,
+        3460
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Menu2Part2"
+            },
+            {
+              "column": "selecionado",
+              "value": "Menu2Part2Sim"
+            },
+            {
+              "column": "convenio",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.convenio }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ecf1a9ac-02eb-4c5b-9c8d-b8dca8d35ee0",
+      "name": "Continua Siso1",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        3460,
+        3220
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Buscar Ultima Mensagem').item.json.state }}",
+              "value2": "Menu2Part2"
+            }
+          ]
+        }
+      },
+      "id": "3ce3ba7d-22d4-4d2b-b0ee-37f1c359b770",
+      "name": "Continuação dos Menus 2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        2760
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo, logo entraremos em contato!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9eb1a65b-57ad-4d11-9f59-58741edf06fc",
+      "name": "Foto Recebida",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        160,
+        2560
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $('Buscar Ultima Mensagem').item.json.selecionado }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "Menu2Part2Sim",
+              "outputKey": "1"
+            },
+            {
+              "value2": "Menu2Part2Nao",
+              "outputKey": "2"
+            }
+          ]
+        }
+      },
+      "id": "6e202254-b4bb-42e6-952e-0e978cc16376",
+      "name": "Tipo do Menu2",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        2740
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $('Webhook').item.json.body.content }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "1",
+              "outputKey": "1"
+            },
+            {
+              "value2": "2",
+              "outputKey": "2"
+            }
+          ]
+        }
+      },
+      "id": "870a6f35-d9f7-4201-84fe-f491429c293f",
+      "name": "Continuar Atendimento Ou Nao",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [
+        160,
+        2780
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "= Me informa seu CPF, por favor."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "65a12013-8437-4ded-8cea-e4a7ad580493",
+      "name": "Solicitar CPF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        560,
+        2660
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Agradecemos seu contato!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d245741e-fa48-477a-be7a-edb983732007",
+      "name": "Finalizando Atendimento",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        560,
+        2840
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Menu2Part3"
+            },
+            {
+              "column": "selecionado",
+              "value": "CPF"
+            },
+            {
+              "column": "convenio",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.convenio }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d63f3a8d-acf8-48ba-985a-6070b8f8d8dc",
+      "name": "Continua Siso2",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        2780
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Buscar Ultima Mensagem').item.json.state }}",
+              "value2": "Menu2Part3"
+            }
+          ]
+        }
+      },
+      "id": "9014904f-3e2d-4c37-a25c-969c28d68c6d",
+      "name": "Continuação dos Menus  3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        3160
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Menu2Part4"
+            },
+            {
+              "column": "selecionado",
+              "value": "Carteirinha"
+            },
+            {
+              "column": "convenio",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.convenio }}"
+            },
+            {
+              "column": "cpf",
+              "value": "={{ $('Webhook').item.json.body.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c37c3ff3-254e-4f89-a8ed-1b1d942cf2dd",
+      "name": "Continua Siso3",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        3140
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Me informa a  carteirinha do convênio."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "eef80575-85d6-48c1-876b-9019ae34534e",
+      "name": "Solicitar Carteirinha",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -260,
+        3140
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Buscar Ultima Mensagem').item.json.state }}",
+              "value2": "Menu2Part4"
+            }
+          ]
+        }
+      },
+      "id": "d2c18639-5e0c-43b4-b179-ca976206e43a",
+      "name": "Continuação dos Menus  ",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        3460
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Parametros Iniciais').item.json.envioMensagemUrl }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "name": "=message",
+              "value": "=Certo, agradecemos seu contato!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6f4c3f03-8a9e-4d9e-b1c4-104eaed0fdda",
+      "name": "Finalizando Atendimento1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -260,
+        3440
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "mensagens",
+          "mode": "list",
+          "cachedResultName": "mensagens"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "usuario",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"from\"] }}"
+            },
+            {
+              "column": "mensagem",
+              "value": "={{ $('Webhook').item.json[\"body\"][\"body\"] }}"
+            },
+            {
+              "column": "state",
+              "value": "=Atendimento"
+            },
+            {
+              "column": "selecionado",
+              "value": "Atendimento"
+            },
+            {
+              "column": "convenio",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.convenio }}"
+            },
+            {
+              "column": "numero_carteirinha",
+              "value": "={{ $('Webhook').item.json.body.content }}"
+            },
+            {
+              "column": "cpf",
+              "value": "={{ $('Buscar Ultima Mensagem').item.json.cpf }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c7b3ad9c-ae3a-4380-a3cd-8df023fc28d6",
+      "name": "Continua Siso4",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.2,
+      "position": [
+        80,
+        3440
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "n1VndDh8acRUB9bq",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Webhook').item.json.body.content }}",
+              "operation": "notRegex",
+              "value2": "/[A-Z]/gi"
+            }
+          ]
+        }
+      },
+      "id": "0e5ae1d7-323e-4901-8ed1-8df7005a83bb",
+      "name": "Verifica Numeros",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        1140
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parametros Iniciais",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mensagem de Contato": {
+      "main": [
+        [
+          {
+            "node": "Buscar Ultima Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica Palavra Chave": {
+      "main": [
+        [
+          {
+            "node": "Apresentação Inicial",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verifica Numeros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parametros Iniciais": {
+      "main": [
+        [
+          {
+            "node": "Mensagem de Contato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apresentação Inicial": {
+      "main": [
+        [
+          {
+            "node": "Status Inicial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apresenta Sub Menu 1": {
+      "main": [
+        [
+          {
+            "node": "Status Menu 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Ultima Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Verifica Palavra Chave",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Status Principal": {
+      "main": [
+        [
+          {
+            "node": "Verifica Opções do Menu Principal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Selecionar Convenios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verificar Convenios ou Particular": {
+      "main": [
+        [
+          {
+            "node": "Apresenta Convenios",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Particular",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apresenta Convenios": {
+      "main": [
+        [
+          {
+            "node": "Status Convenio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apresenta Sub Menu 2": {
+      "main": [
+        [
+          {
+            "node": "Status Menu 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apresenta Sub Menu 3": {
+      "main": [
+        [
+          {
+            "node": "Status Menu 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apresenta Sub Menu 4": {
+      "main": [
+        [
+          {
+            "node": "Status Menu 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apresenta Sub Menu 5": {
+      "main": [
+        [
+          {
+            "node": "Status Menu 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apresenta Sub Menu 6": {
+      "main": [
+        [
+          {
+            "node": "Status Menu ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica Opções do Menu Principal": {
+      "main": [
+        [
+          {
+            "node": "Apresenta Sub Menu 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apresenta Sub Menu 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apresenta Sub Menu 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apresenta Sub Menu 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apresenta Sub Menu 5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Apresenta Sub Menu 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Particular": {
+      "main": [
+        [
+          {
+            "node": "Status Convenio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Selecionar Convenios": {
+      "main": [
+        [
+          {
+            "node": "Escolha dos Convenios",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continuação dos Menus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Convenio  5": {
+      "main": [
+        [
+          {
+            "node": "Entraremos em Contato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Convenio 1": {
+      "main": [
+        [
+          {
+            "node": "Buscar Ultima Mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Convenio 2": {
+      "main": [
+        [
+          {
+            "node": "Buscar Ultima Mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Convenio  3": {
+      "main": [
+        [
+          {
+            "node": "Buscar Ultima Mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salvar Convenio  4": {
+      "main": [
+        [
+          {
+            "node": "Buscar Ultima Mensagem1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escolha dos Convenios": {
+      "main": [
+        [
+          {
+            "node": "Salvar Convenio 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Salvar Convenio 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Salvar Convenio  3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Salvar Convenio  4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Salvar Convenio  5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Ultima Mensagem1": {
+      "main": [
+        [
+          {
+            "node": "Status Escolhido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continuação dos Menus": {
+      "main": [
+        [
+          {
+            "node": "Parte 2 Dos Menus",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continuação dos Menus 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status Escolhido": {
+      "main": [
+        [
+          {
+            "node": "Atendemos Convenio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Se Siso Incluso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Atendemos Convenio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalizar Status": {
+      "main": [
+        [
+          {
+            "node": "Entraremos em Contato1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parte 2 Dos Menus": {
+      "main": [
+        [
+          {
+            "node": "Finalizar Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "RaioX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finalizar Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RaioX": {
+      "main": [
+        [
+          {
+            "node": "Me Envie Foto ou Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Precisamos Solicitar Raio X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Me Envie Foto ou Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Continua Siso1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Precisamos Solicitar Raio X": {
+      "main": [
+        [
+          {
+            "node": "Continua Siso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continuação dos Menus 2": {
+      "main": [
+        [
+          {
+            "node": "Tipo do Menu2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continuação dos Menus  3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipo do Menu2": {
+      "main": [
+        [
+          {
+            "node": "Foto Recebida",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continuar Atendimento Ou Nao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continuar Atendimento Ou Nao": {
+      "main": [
+        [
+          {
+            "node": "Solicitar CPF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finalizando Atendimento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solicitar CPF": {
+      "main": [
+        [
+          {
+            "node": "Continua Siso2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continuação dos Menus  3": {
+      "main": [
+        [
+          {
+            "node": "Solicitar Carteirinha",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continuação dos Menus  ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solicitar Carteirinha": {
+      "main": [
+        [
+          {
+            "node": "Continua Siso3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continuação dos Menus  ": {
+      "main": [
+        [
+          {
+            "node": "Finalizando Atendimento1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Verificar Convenios ou Particular",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalizando Atendimento1": {
+      "main": [
+        [
+          {
+            "node": "Continua Siso4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica Numeros": {
+      "main": [
+        [
+          {
+            "node": "Verificar Status Principal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d05854dd-2e1d-4e6e-99ec-d4f3f1822aee",
+  "id": "gvwK7BqqzFjeZlVm",
+  "meta": {
+    "instanceId": "a7239f6246ab0eb2bcefc8c71cc05aef65ff20a9ad331d10ba1d23db6119c479"
+  },
+  "tags": []
+}
