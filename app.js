@@ -60,7 +60,7 @@ wppconnect.create({
         try {
           const options = {
             'method': 'POST',
-            'url': 'http://127.0.0.1:5678/webhook-test/489deb8e-cfe7-41e4-ad17-40ac30b9a7cd',
+            'url': 'http://127.0.0.1:5678/webhook/489deb8e-cfe7-41e4-ad17-40ac30b9a7cd',
             'headers': {
               'Content-Type': 'application/json'
             },
